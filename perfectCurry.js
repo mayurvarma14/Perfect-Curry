@@ -1,44 +1,39 @@
+function makeCurry(arr) {
+    sum = arr.reduce((acc,val)=>val+acc,0);
+    if (sum % 3) return "noLuck";
+    division = sum / 3;
 
-
-function makeCurry(nums) {
-    const sum = nums.reduce((acc,sum)=>acc + sum, 0);
-    if (sum % 3) {
-        return 'noLuck'
-    }
-    const sumToFind = sum / 3;
-    console.log(sum, sumToFind)
-    let result = [];
-    let numMap = {}
-    for (let i = 0; i < nums.length; i++) {
-
-        numMap[nums[i]] = i;
-    }
-    console.log(numMap)
-    let pairs=[]
-    for(let i=0;i<nums.length;i++){
-        if(nums[i]==sumToFind){
-        console.log('Pair',i)
-        pairs.push([i])
-        }else {
-            if(numMap[Math.abs(sumToFind-nums[i])]){
-                console.log('Pair',i,numMap[Math.abs(sumToFind-nums[i])])
-                 pairs.push([i,numMap[Math.abs(sumToFind-nums[i])]])
-            }
+    function recurse(arr, result, division, ingredient, sum, i) {
+        if (sum === division) {
+          
+            if (ingredient === "Q") return true;
+          
+            first = result.indexOf('P');
+            return recurse(arr, result, division, "Q", 0, first+1);
         }
-    }
-    
-    const ingredients=['P','Q','R'];
-    let count=0
-    pairs.forEach((pair)=>{
-        if(count<3){
-            pair.forEach((p)=>{result[p]=ingredients[count]})
-        count++;
-        }
+        if (i >= arr.length) return false;
         
-    })
-    return result
+        success = recurse(arr, result, division, ingredient, sum, i+1);
+        if (success) return true;
+       
+        if (result[i] === "R") {
+            result[i] = ingredient;
+            success = recurse(arr, result, division, ingredient, sum + arr[i], i+1);
+            if (success) return true;
+            result[i] = "R";
+        }
+      
+        return false;
+    }
 
-
+  
+    result =new Array(arr.length).fill('R');
+    if (division === 0) return result; 
+    
+     success = recurse(arr, result, division, "P", 0, 1);
+    return success ? result : "noLuck";
 }
 
-makeCurry([3, 7, 2, 5, 4])
+console.log(makeCurry([3, 7, 2, 5, 4]));
+console.log(makeCurry([3,6,9]));
+console.log(makeCurry([3, 7, 2, 5, 4,1,1,1]));
